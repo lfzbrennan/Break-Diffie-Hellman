@@ -3,6 +3,7 @@ from torch.utils.data import IterableDataset
 import random
 
 import sympy
+from sympy.ntheory.primetest import isprime
 
 
 class DiscreteLogDataset(IterableDataset):
@@ -17,10 +18,17 @@ class DiscreteLogDataset(IterableDataset):
     def to_bit_string(self, s):
         return format(s, f"0{self.bits}b")
 
+    def get_safe_prime(self):
+        while True:
+            N = 2 * sympy.randprime(2 ** (self.bits - 2), 2 ** (self.bits - 1)) + 1
+            if isprime(N):
+                return N
+
     def __next__(self):
         g = self.g
+
         # get random prime N
-        N = sympy.randprime(0, 2 ** self.bits)
+        N = self.get_safe_prime()
 
         # get random "key" x
         x = random.randrange(0, N)
