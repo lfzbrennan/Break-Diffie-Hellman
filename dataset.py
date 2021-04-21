@@ -7,8 +7,8 @@ from sympy.ntheory.primetest import isprime
 
 
 class DiscreteLogDataset(IterableDataset):
-    def __init__(self, bits=16, g=3):
-        self.g = g  # set g to 3, common practice
+    def __init__(self, bits=16):
+        self.g = 2
         self.bits = bits
 
     def __iter__(self):
@@ -20,11 +20,12 @@ class DiscreteLogDataset(IterableDataset):
 
     def get_safe_prime(self):
         while True:
-            N = 2 * sympy.randprime(2 ** (self.bits - 2), 2 ** (self.bits - 1)) + 1
-            if isprime(N):
-                return N
+            q = sympy.randprime(0, 2 ** (self.bits - 1))
+            if q % 12 == 5 and isprime(2 * q + 1):
+                return 2 * q + 1
 
     def __next__(self):
+
         g = self.g
 
         # get random prime N
